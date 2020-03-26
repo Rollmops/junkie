@@ -79,7 +79,9 @@ class CoreContext:
                 arg = self._call(self._factories[name], stack, name)
 
             else:
-                raise Exception("Not found: " + name)
+                raise Exception(
+                    "Unable to find argument '{}' for factory function '{}'".format(name, instance_name)
+                )
 
             arg_instances.append(arg)
             arg_names.append(name)

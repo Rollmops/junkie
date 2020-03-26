@@ -165,3 +165,28 @@ class CoreContextTest(unittest.TestCase):
             "DEBUG:{}:message_service.__exit__()".format(junkie.__name__),
             "DEBUG:{}:database_context.__exit__()".format(junkie.__name__),
         ], logging_context.output)
+
+    def test_not_found_exception_by_name(self):
+        core_context = CoreContext()
+        core_context.add_factories({
+            "foo": lambda bar: bar
+        })
+
+        with self.assertRaises(Exception) as exception:
+            with core_context.build_instance_by_name("foo"):
+                pass
+
+        self.assertEqual(
+            "Unable to find argument 'bar' for factory function 'foo'", str(exception.exception)
+        )
+
+    def test_not_found_exception_by_type(self):
+        class App:
+            def __init__(self, argument: str):
+                self.argument = argument
+
+        with self.assertRaises(Exception) as exception:
+            with CoreContext().build_instance_by_type(App):
+                pass
+
+        self.assertEqual("Unable to find argument 'argument' for factory function 'App'", str(exception.exception))
