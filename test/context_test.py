@@ -85,7 +85,7 @@ class ContextTest(unittest.TestCase):
                 prefix: str
                 suffix: str
                 pass
-    
+
                 def __post_init__(self):
                     self.text = self.prefix + self.suffix
 
