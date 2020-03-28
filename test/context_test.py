@@ -1,4 +1,5 @@
 import sys
+import textwrap
 import unittest
 from unittest import skipIf
 
@@ -16,10 +17,10 @@ class ContextTest(unittest.TestCase):
             "suffix": "def",
             "text": lambda prefix, suffix: prefix + suffix
         })
-        context.add({
-            "class": Class,
-            "suffix": "xyz"
-        })
+        context.add(
+            {"class": Class},
+            {"suffix": "xyz"}
+        )
 
         with context.build({"text", "prefix"}) as instance:
             self.assertEqual({"text": "abcxyz", "prefix": "abc"}, instance)
@@ -27,23 +28,30 @@ class ContextTest(unittest.TestCase):
         with context.build(["text", "prefix"]) as instance:
             self.assertEqual({"text": "abcxyz", "prefix": "abc"}, instance)
 
+        with context.build(("text", "prefix")) as (text, prefix):
+            self.assertEqual("abcxyz", text)
+            self.assertEqual("abc", prefix)
+
         with context.build("class") as instance:
             self.assertEqual("abcxyz", instance.text)
 
         with context.build(Class) as instance:
             self.assertEqual("abcxyz", instance.text)
 
-    @skipIf(sys.version_info.major <= 3 and sys.version_info.minor < 7, "@dataclass is new in version 3.7")
+    @skipIf(sys.version_info < (3, 7), "@dataclass needs at least Python 3.7")
     def test_dataclass_decorator(self):
-        from dataclasses import dataclass
+        exec(textwrap.dedent("""
+            from dataclasses import dataclass
 
-        @dataclass
-        class Class:
-            prefix: str
-            suffix: str
+            @dataclass
+            class Class:
+                prefix: str
+                suffix: str
+                pass
+    
+                def __post_init__(self):
+                    self.text = self.prefix + self.suffix
 
-            def __post_init__(self):
-                self.text = self.prefix + self.suffix
-
-        with Context({"prefix": "abc", "suffix": "def"}).build(Class) as instance:
-            self.assertEqual("abcdef", instance.text)
+            with Context({"prefix": "abc", "suffix": "def"}).build(Class) as instance:
+                self.assertEqual("abcdef", instance.text)
+        """))
