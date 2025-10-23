@@ -24,3 +24,8 @@ Homepage = "https://github.com/sealor/junkie"
 
 [tool.setuptools.packages.find]
 exclude = ["test*"]
+
+[dependency-groups]
+dev = [
+    "pytest-asyncio>=1.2.0",
+]
