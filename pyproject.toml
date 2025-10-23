@@ -7,7 +7,7 @@ name = "junkie"
 version = "3.0.2"
 description = "A dependency injection library for beginners and professionals"
 readme = "README.md"
-requires-python = ">=3.6"
+requires-python = ">=3.8"
 license = {text = "MIT License"}
 authors = [
     {name = "Stefan Richter"},
