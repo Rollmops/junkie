@@ -328,6 +328,23 @@ with Junkie(context).inject("working_connection") as working_connection:
     pass
 ```
 
+## Async Support
+
+Junkie also provides `AsyncJunkie` for asynchronous dependency injection.
+
+```python
+from junkie import AsyncJunkie
+import asyncio
+
+async def main():
+    context = {"addressee": "World"}
+    async with AsyncJunkie(context).inject(App) as app:
+        assert app.greets() == "Hello World!"
+
+asyncio.run(main())
+```
+
+
 # Collaboration
 
 ## Get Involved
